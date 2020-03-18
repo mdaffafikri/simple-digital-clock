@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"/>
+    <link href="https://fonts.googleapis.com/css?family=Oxanium&display=swap" rel="stylesheet"> 
+    <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.1.0/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Clock</title>
+
+    <style type="text/css">
+        
+        body { 
+            background: #20232A;
+            font-family: 'Oxanium', cursive;
+            transition: all .4s ease-in-out
+        }
+
+        .hello {
+            opacity: 0;
+        }
+
+        .muter {
+            /* background-color: aliceblue; */
+            height: 22px;
+        }
+
+        .toggle {
+            position: relative;
+            width: 60px;
+            height: 34px;
+            display: inline-block;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            cursor: pointer;
+            background-color: whitesmoke;
+            border-radius: 34px;
+            width: 60px;
+        }
+
+        .circle {
+            position:  absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: crimson;
+            border-radius: 50%;
+        }
+
+     </style>
+</head>
+
+<body>
+    
+    <div id="mydiv"></div>
+
+    <script type="text/babel">
+        class Clock extends React.Component{
+            constructor(props){
+                super(props)
+                this.state = {
+                    detik : null,
+                    menit : null,
+                    jam : null ,
+                    toggle : false
+                }
+            }
+
+
+            componentDidMount(){
+                this.addInterval = setInterval( ()=> this.detik(), 1000 )
+
+                anime({
+                    targets: '.hello',
+                    opacity: 1,
+                    direction: 'alternate',
+                    delay: 1000,
+                    duration: 2000,
+                    complete: function(anim){
+                        document.getElementById('hello').innerHTML = 'This is just an ordinary clock'
+                        anime({
+                            targets: '.hello',
+                            opacity: 1,
+                            direction: 'alternate',
+                            duration: 2000,
+                            complete: function(anim){
+                                document.getElementById("hello").style.visibility='hidden';
+                            }
+                        })
+                    }
+                })
+            
+                anime({
+                    targets:'.muter',
+                    rotate: 360,
+                    easing: 'linear',
+                    loop: true,
+                })
+            }
+
+            componentWillUnmount(){
+                clearInterval(this.addInterval)
+            }
+
+            detik = () =>{
+                var waktu = new Date();
+                this.setState({ 
+                    detik : waktu.getSeconds(),
+                    menit : waktu.getMinutes(),
+                    jam : waktu.getHours() 
+                    })
+                // console.log(this.state.detik)
+            }
+
+            toggleChange = () => {
+
+                if(this.state.toggle === false){
+                    this.setState({toggle: true})
+                    anime({
+                    targets:'.circle',
+                    duration: 400,
+                    translateX : 26,
+                    })
+                    document.getElementsByClassName('slider')[0].style.backgroundColor = '#20232A'
+                    document.body.style.backgroundColor = 'whitesmoke'
+                }
+
+                else{
+                    this.setState({toggle: false})
+                    anime({
+                    targets:'.circle',
+                    duration: 400,
+                    translateX : 0,
+                    })
+                    document.getElementsByClassName('slider')[0].style.backgroundColor = 'whitesmoke'
+                    document.body.style.backgroundColor = '#20232A'
+                }
+            }
+
+            render(){
+                return(
+                        <div className='container d-flex align-items-center' style={styles.container}>
+                            <h1 id='hello' className='hello'>Hello</h1>
+                            <h1 id='jam'>{this.state.jam} : {this.state.menit} : {this.state.detik} </h1>
+                            <h5 className='muter'><i className="fas fa-bahai"></i></h5>
+                            
+                            <label className="toggle">
+                                <input type="checkbox" onChange={this.toggleChange}/>
+                                <span  className="slider"><span className="circle"></span></span>
+                            </label>
+
+                        </div>
+                )
+            }
+        }
+
+        const styles = {
+            container: {
+                color: 'crimson',
+                textAlign: 'center',
+                justifyContent: 'center',
+                height: '100vh',
+                flexDirection: 'column'
+            }
+        }
+        
+        ReactDOM.render(<Clock />, document.getElementById('mydiv'))
+        </script>
+
+</body>
+</html>
